@@ -1,11 +1,46 @@
-index.html
 <!DOCTYPE html>
 <html>
 <head>
   <title>Spin & Earn</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      background: #f4f4f4;
+      padding-top: 50px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #coins {
+      font-size: 24px;
+      margin: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Spin & Earn Website</h1>
-  <p>Website is live and working.</p>
+
+  <h1>Spin & Earn</h1>
+
+  <div id="coins">Coins: 0</div>
+
+  <button onclick="spin()">SPIN</button>
+
+  <script>
+    let coins = 0;
+
+    function spin() {
+      coins += 20;
+      document.getElementById("coins").innerText = "Coins: " + coins;
+      alert("You earned 20 coins!");
+    }
+  </script>
+
 </body>
 </html>
