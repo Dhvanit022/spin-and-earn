@@ -1,54 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Spin & Earn</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       background: #f4f6f9;
       padding: 30px;
+      text-align: center;
     }
 
     .card {
-      background: white;
+      background: #fff;
       padding: 25px;
-      border-radius: 10px;
-      max-width: 400px;
+      max-width: 420px;
       margin: auto;
+      border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    h1 {
-      margin-bottom: 10px;
-    }
+    h1 { margin-bottom: 10px; }
 
     .coins {
       font-size: 22px;
-      margin: 10px 0;
       color: green;
+      margin: 10px 0;
     }
 
     button {
-      padding: 15px 30px;
+      padding: 14px 30px;
       font-size: 18px;
+      background: #007bff;
+      color: #fff;
       border: none;
       border-radius: 6px;
-      background: #007bff;
-      color: white;
       cursor: pointer;
     }
 
     button:disabled {
-      background: grey;
+      background: gray;
       cursor: not-allowed;
     }
 
     #timer {
       margin-top: 15px;
-      font-weight: bold;
       color: red;
+      font-weight: bold;
     }
 
     .info {
@@ -58,6 +58,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="card">
@@ -73,7 +74,7 @@
 
   <br>
 
-  <button onclick="spin()" id="spinBtn">Spin Now</button>
+  <button id="spinBtn">Spin Now</button>
 
   <div id="timer"></div>
 
@@ -84,70 +85,85 @@
 </div>
 
 <script>
-
+/* ================= CONFIG ================= */
 const MAX_SPINS = 30;
 const SPIN_REWARD = 20;
+const COOLDOWN_SECONDS = 30;
+const ADSTERRA_LINK = "YOUR_ADSTERRA_DIRECT_LINK_HERE";
+/* ========================================= */
 
-let coins = localStorage.getItem("coins") 
-  ? parseInt(localStorage.getItem("coins")) 
-  : 0;
+/* ====== BASIC STATE LOCKS ====== */
+let isSpinning = false;
 
-let spinCount = localStorage.getItem("spinCount") 
-  ? parseInt(localStorage.getItem("spinCount")) 
-  : 0;
-
+/* ====== LOAD SAVED DATA ====== */
+let coins = Number(localStorage.getItem("coins")) || 0;
+let spinCount = Number(localStorage.getItem("spinCount")) || 0;
 let lastSpinDate = localStorage.getItem("lastSpinDate") || "";
 
-let today = new Date().toDateString();
+const today = new Date().toDateString();
 
+/* ====== DAILY RESET ====== */
 if (lastSpinDate !== today) {
   spinCount = 0;
-  localStorage.setItem("spinCount", 0);
+  localStorage.setItem("spinCount", "0");
   localStorage.setItem("lastSpinDate", today);
 }
 
+/* ====== UI UPDATE ====== */
 document.getElementById("coins").innerText = coins;
 document.getElementById("spinCount").innerText = spinCount;
 
+document.getElementById("spinBtn").addEventListener("click", spin);
+
+/* ====== SPIN FUNCTION ====== */
 function spin() {
 
+  if (isSpinning) return;
+
   if (spinCount >= MAX_SPINS) {
-    document.getElementById("timer").innerText = "Daily spin limit reached!";
+    document.getElementById("timer").innerText =
+      "Daily spin limit reached!";
     return;
   }
 
-window.open("https://example.pro/?123456", "_blank");
+  isSpinning = true;
   document.getElementById("spinBtn").disabled = true;
 
-  let timeLeft = 30;
-  document.getElementById("timer").innerText = "Wait " + timeLeft + " seconds...";
+  /* OPEN AD (USER ACTION REQUIRED) */
+  window.open(ADSTERRA_LINK, "_blank");
 
-  let countdown = setInterval(function() {
+  let timeLeft = COOLDOWN_SECONDS;
+  document.getElementById("timer").innerText =
+    `Wait ${timeLeft} seconds...`;
 
+  const countdown = setInterval(() => {
     timeLeft--;
-    document.getElementById("timer").innerText = "Wait " + timeLeft + " seconds...";
+
+    document.getElementById("timer").innerText =
+      `Wait ${timeLeft} seconds...`;
 
     if (timeLeft <= 0) {
-
       clearInterval(countdown);
 
+      /* UPDATE VALUES */
       coins += SPIN_REWARD;
       spinCount++;
 
-      localStorage.setItem("coins", coins);
-      localStorage.setItem("spinCount", spinCount);
+      /* SAVE (TEMP – FRONTEND ONLY) */
+      localStorage.setItem("coins", coins.toString());
+      localStorage.setItem("spinCount", spinCount.toString());
 
+      /* UPDATE UI */
       document.getElementById("coins").innerText = coins;
       document.getElementById("spinCount").innerText = spinCount;
-
-      document.getElementById("timer").innerText = "You earned 20 coins!";
+      document.getElementById("timer").innerText =
+        `You earned ${SPIN_REWARD} coins!`;
 
       document.getElementById("spinBtn").disabled = false;
+      isSpinning = false;
     }
-
   }, 1000);
 }
-
 </script>
 
 </body>
